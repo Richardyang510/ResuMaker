@@ -1,12 +1,13 @@
-package com.test.resume;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
@@ -14,10 +15,23 @@ import java.io.*;
 
 public class Main extends Application {
 
-    BorderPane rootlayout;
-    BorderPane viewerBorderPane;
-    ScrollPane htmlScrollPane;
-    VBox sectionSelectorVBox;
+    private enum SelectorOption {
+        EDUCATION,
+        WORK,
+        PROJECT,
+        SKILL
+    }
+
+    private SelectorOption currentSelectorOption = SelectorOption.EDUCATION;
+
+    private ListView educationListView;
+
+    private BorderPane rootlayout;
+    private BorderPane viewerBorderPane;
+    private BorderPane itemChooserBorderPane;
+    private StackPane htmlStackPane;
+    private VBox sectionSelectorVBox;
+    private HBox renderOptionsHBox;
 
     public static String getFileContent(
             InputStream fis) throws IOException {
@@ -50,6 +64,9 @@ public class Main extends Application {
     private BorderPane createRootLayout() {
         rootlayout = new BorderPane();
         rootlayout.setRight(createViewerBorderPane());
+        rootlayout.setLeft(createSectionSelectorVBox());
+        rootlayout.setCenter(createItemChooserBorderPane());
+        updateCurrentSelected();
 
         return rootlayout;
     }
@@ -58,25 +75,33 @@ public class Main extends Application {
         viewerBorderPane = new BorderPane();
         viewerBorderPane.setRight(createHTMLScrollPane());
 
-        viewerBorderPane.setLeft(createSectionSelectorVBox());
+        renderOptionsHBox = new HBox();
 
+        Button saveButton = new Button("Save");
+        renderOptionsHBox.getChildren().addAll(saveButton);
+
+        viewerBorderPane.setBottom(renderOptionsHBox);
+        
         return viewerBorderPane;
     }
 
-    private ScrollPane createHTMLScrollPane() {
-        htmlScrollPane = new ScrollPane();
+    private StackPane createHTMLScrollPane() {
+        htmlStackPane = new StackPane();
 
         Platform.runLater(() -> {
             WebView webView = new WebView();
             try {
-                webView.getEngine().loadContent(getFileContent(getClass().getResource("test.html").openStream())); // TODO find created HTML file
+                webView.getEngine().loadContent(getFileContent(getClass().getResource("index.html").openStream())); // TODO find created HTML file
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            htmlScrollPane.setContent(webView);
+            webView.setMaxHeight(Double.MAX_VALUE);
+            webView.setMaxWidth(Double.MAX_VALUE);
+            htmlStackPane.getChildren().addAll(webView);
+            htmlStackPane.setPrefWidth(1000D);
         });
 
-        return htmlScrollPane;
+        return htmlStackPane;
     }
 
     private VBox createSectionSelectorVBox() {
@@ -91,9 +116,34 @@ public class Main extends Application {
         projButton.setMaxWidth(Double.MAX_VALUE);
         skillButton.setMaxWidth(Double.MAX_VALUE);
 
+        eduButton.setOnMouseClicked(e -> {
+            currentSelectorOption = SelectorOption.EDUCATION;
+            updateCurrentSelected();
+        });
+
         sectionSelectorVBox.getChildren().addAll(eduButton, workButton, projButton, skillButton);
 
         return sectionSelectorVBox;
+    }
+
+    private BorderPane createItemChooserBorderPane() {
+        itemChooserBorderPane = new BorderPane();
+
+        return itemChooserBorderPane;
+    }
+
+    private void updateCurrentSelected() {
+        if(currentSelectorOption == SelectorOption.EDUCATION) {
+            createEducationSelector();
+        }
+    }
+
+    private void createEducationSelector() {
+        itemChooserBorderPane.setTop(new Text("Education"));
+        if(educationListView == null) {
+            educationListView = new ListView();
+        }
+        itemChooserBorderPane.setCenter(educationListView);
     }
 
 }
