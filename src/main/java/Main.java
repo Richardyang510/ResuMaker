@@ -1,8 +1,14 @@
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -10,10 +16,39 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class Main extends Application {
+
+    private class ResumeField {
+        String title;
+        String position;
+        String location;
+        String startDate;
+        String toDate;
+        ArrayList<String> points;
+
+        ResumeField(String title, String position, String location, String startDate, String toDate) {
+            this.title = title;
+            this.position = position;
+            this.location = location;
+            this.startDate = startDate;
+            this.toDate = toDate;
+            this.points = new ArrayList<>();
+        }
+
+        public void addPoint(String point) {
+            points.add(point);
+        }
+
+        @Override
+        public String toString() {
+            return "[" + title + "] " + position + " at " + location + " from " + startDate + "-" + toDate;
+        }
+    }
 
     private enum SelectorOption {
         EDUCATION,
@@ -24,7 +59,8 @@ public class Main extends Application {
 
     private SelectorOption currentSelectorOption = SelectorOption.EDUCATION;
 
-    private ListView educationListView;
+    private ListView<ResumeField> educationListView;
+    private ObservableList<ResumeField> educationData;
 
     private BorderPane rootlayout;
     private BorderPane viewerBorderPane;
@@ -81,7 +117,7 @@ public class Main extends Application {
         renderOptionsHBox.getChildren().addAll(saveButton);
 
         viewerBorderPane.setBottom(renderOptionsHBox);
-        
+
         return viewerBorderPane;
     }
 
@@ -141,7 +177,19 @@ public class Main extends Application {
     private void createEducationSelector() {
         itemChooserBorderPane.setTop(new Text("Education"));
         if(educationListView == null) {
-            educationListView = new ListView();
+            educationData = FXCollections.observableArrayList();
+            educationData.add(new ResumeField("University of Waterloo", "Software Developer", "Waterloo, ON", "2014", "Present"));
+            educationListView = new ListView<ResumeField>(educationData);
+            educationListView.setCellFactory(CheckBoxListCell.forListView(new Callback<ResumeField, ObservableValue<Boolean>>() {
+                @Override
+                public ObservableValue<Boolean> call(ResumeField field) {
+                    BooleanProperty observable = new SimpleBooleanProperty();
+                    observable.addListener((obs, wasSelected, isNowSelected) ->
+                            System.out.println("Check box for "+field+" changed from "+wasSelected+" to "+isNowSelected)
+                    );
+                    return observable ;
+                }
+            }));
         }
         itemChooserBorderPane.setCenter(educationListView);
     }
