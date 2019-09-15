@@ -216,7 +216,7 @@ public class Main extends Application {
             @Override
             public ObservableValue<Boolean> call(Section item) {
                 System.out.println("asdf");
-                BooleanProperty observable = new SimpleBooleanProperty();
+                BooleanProperty observable = new SimpleBooleanProperty(item.isEnabled());
                 observable.addListener((obs, wasSelected, isNowSelected) -> {
                         item.setEnabled(isNowSelected);
                         updateLiveIfChecked();

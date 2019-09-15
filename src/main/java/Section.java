@@ -23,7 +23,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Section {
 
@@ -108,7 +107,7 @@ public class Section {
 
         listView = new ListView<>(data);
         listView.setCellFactory(CheckBoxListCell.forListView(field -> {
-            BooleanProperty observable = new SimpleBooleanProperty();
+            BooleanProperty observable = new SimpleBooleanProperty(field.isEnabled());
             observable.addListener((obs, wasSelected, isNowSelected) -> {
                 field.setEnabled(isNowSelected);
                 main.updateLiveIfChecked();
