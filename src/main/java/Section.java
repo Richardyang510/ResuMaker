@@ -7,10 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.KeyCode;
@@ -37,6 +34,8 @@ public class Section {
     private boolean enabled = false;
 
     private String notResumeFieldData;
+    private TextArea blurbTextArea;
+    private GridPane blurbEditorGrid;
 
     private String dataLocation;
     private ObservableList<ResumeField> data;
@@ -239,9 +238,51 @@ public class Section {
         return editorStage;
     }
 
+    private GridPane blurbEditor() {
+        if(blurbEditorGrid != null) return blurbEditorGrid;
+
+        try {
+            notResumeFieldData = mapper.readValue(getClass().getResource(dataLocation), String.class);
+        } catch (IOException e) {
+            notResumeFieldData = "Failed to read file at " + dataLocation;
+        }
+        blurbTextArea = new TextArea(notResumeFieldData);
+
+        blurbEditorGrid = new GridPane();
+        blurbEditorGrid.setAlignment(Pos.CENTER);
+        blurbEditorGrid.setHgap(10);
+        blurbEditorGrid.setVgap(10);
+        blurbEditorGrid.setPadding(new Insets(25, 25, 25, 25));
+
+        blurbEditorGrid.add(blurbTextArea, 0, 0);
+
+        Button blurbSave = new Button("Save");
+        Button blurbCancel = new Button("Cancel");
+
+        HBox hbBtn = new HBox(10);
+        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
+        hbBtn.getChildren().add(blurbSave);
+        hbBtn.getChildren().add(blurbCancel);
+        blurbEditorGrid.add(hbBtn, 0, 1);
+
+        blurbSave.setOnMouseClicked(e -> {
+            notResumeFieldData = blurbTextArea.getText();
+        });
+
+        blurbCancel.setOnMouseClicked(e -> {
+            blurbTextArea.setText(notResumeFieldData);
+        });
+
+        return blurbEditorGrid;
+    }
+
     public void display(BorderPane display) {
         display.setTop(title);
-        display.setCenter(listView);
+        if(usesResumeField) {
+            display.setCenter(listView);
+        } else {
+            display.setCenter(blurbEditor());
+        }
     }
 
     @Override

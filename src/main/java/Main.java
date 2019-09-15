@@ -14,6 +14,7 @@ public class Main extends Application {
 
     private enum SelectorOption {
         SECTIONS,
+        BLURB,
         EDUCATION,
         WORK,
         PROJECT,
@@ -24,6 +25,7 @@ public class Main extends Application {
 
     private ObservableList<Section> sectionObservableList;
     private ListView sectionListView;
+    private Section blurb;
     private Section education;
     private Section work;
     private Section proj;
@@ -113,12 +115,14 @@ public class Main extends Application {
     private VBox createSectionSelectorVBox() {
         sectionSelectorVBox = new VBox();
         Button secButton = new Button("Sections");
+        Button blurbButton = new Button("Career Objective");
         Button eduButton = new Button("Education");
         Button workButton = new Button("Work Experience");
         Button projButton = new Button("Personal Project");
         Button skillButton = new Button("Skills");
 
         secButton.setMaxWidth(Double.MAX_VALUE);
+        blurbButton.setMaxWidth(Double.MAX_VALUE);
         eduButton.setMaxWidth(Double.MAX_VALUE);
         workButton.setMaxWidth(Double.MAX_VALUE);
         projButton.setMaxWidth(Double.MAX_VALUE);
@@ -126,6 +130,11 @@ public class Main extends Application {
 
         secButton.setOnMouseClicked(e -> {
             currentSelectorOption = SelectorOption.SECTIONS;
+            updateCurrentSelected();
+        });
+
+        blurbButton.setOnMouseClicked(e -> {
+            currentSelectorOption = SelectorOption.BLURB;
             updateCurrentSelected();
         });
 
@@ -144,9 +153,7 @@ public class Main extends Application {
             updateCurrentSelected();
         });
 
-
-
-        sectionSelectorVBox.getChildren().addAll(secButton, eduButton, workButton, projButton, skillButton);
+        sectionSelectorVBox.getChildren().addAll(secButton, blurbButton, eduButton, workButton, projButton, skillButton);
 
         return sectionSelectorVBox;
     }
@@ -154,6 +161,7 @@ public class Main extends Application {
     private BorderPane createItemChooserBorderPane() {
         sectionObservableList = FXCollections.observableArrayList();
 
+        blurb = new Section("blurb", "Career Objective");
         education = new Section("education", "Education");
         education.initUseResumeField(primaryStage);
         work = new Section("work", "Work Experience");
@@ -161,7 +169,7 @@ public class Main extends Application {
         proj = new Section("proj", "Projects");
         proj.initUseResumeField(primaryStage);
 
-        sectionObservableList.addAll(education, work, proj);
+        sectionObservableList.addAll(blurb, education, work, proj);
 
         // init list view for sections
         sectionListView = new ListView<>(sectionObservableList);
@@ -173,6 +181,9 @@ public class Main extends Application {
     private void updateCurrentSelected() {
         if(currentSelectorOption == SelectorOption.SECTIONS) {
             //createSectionsSelector();
+        }
+        else if (currentSelectorOption == SelectorOption.BLURB) {
+            blurb.display(itemChooserBorderPane);
         }
         else if (currentSelectorOption == SelectorOption.EDUCATION) {
             education.display(itemChooserBorderPane);
