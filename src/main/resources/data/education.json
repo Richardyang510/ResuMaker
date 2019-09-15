@@ -1,0 +1,16 @@
+[
+  {
+    "title": "University of Waterloo",
+    "position": "Computer Science",
+    "location": "Waterloo, ON",
+    "startDate": "2013",
+    "toDate": "present"
+  },
+  {
+    "title": "University of Laurier",
+    "position": "Music",
+    "location": "Waterloo, ON",
+    "startDate": "2003",
+    "toDate": "2013"
+  }
+]
