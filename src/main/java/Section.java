@@ -43,6 +43,10 @@ public class Section {
     private ListView<ResumeField> listView;
     private Stage primaryStage;
 
+    private BorderPane pointsBorderPane;
+    private HBox pointsButtonHBox;
+    private Button newPointButton;
+    private Button remPointButton;
     private ObservableList<String> pointsData;
     private ListView<String> pointsListView;
 
@@ -175,7 +179,23 @@ public class Section {
 
         Label points = new Label("Points:");
         grid.add(points, 0, 6);
-        grid.add(pointsListView, 1, 6);
+
+        pointsBorderPane = new BorderPane();
+        pointsButtonHBox = new HBox();
+        pointsButtonHBox.setMaxWidth(Double.MAX_VALUE);
+        newPointButton = new Button("+");
+        remPointButton = new Button("-");
+        pointsButtonHBox.getChildren().addAll(newPointButton, remPointButton);
+        pointsBorderPane.setBottom(pointsButtonHBox);
+        pointsBorderPane.setCenter(pointsListView);
+
+        newPointButton.setOnMouseClicked(e -> pointsData.add("null"));
+
+        remPointButton.setOnMouseClicked(e -> {
+            pointsData.remove(pointsListView.getSelectionModel().getSelectedItem());
+        });
+
+        grid.add(pointsBorderPane, 1, 6);
 
         // Confirm/Cancel
         Button saveButton = new Button("Save");
