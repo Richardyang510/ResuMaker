@@ -1,0 +1,16 @@
+[
+  {
+    "title": "University of Illinois at Urbana-Champaign",
+    "position": "Software Developer",
+    "location": "Champaign, Il",
+    "startDate": "1985",
+    "toDate": "1986"
+  },
+  {
+    "title": "Massachusetts Institute of Technology",
+    "position": "Janitor",
+    "location": "Cambridge, MA",
+    "startDate": "1987",
+    "toDate": "1988"
+  }
+]

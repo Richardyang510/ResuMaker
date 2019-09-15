@@ -1,31 +1,19 @@
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import java.io.*;
-import java.util.ArrayList;
 
 public class Main extends Application {
 
     private enum SelectorOption {
+        SECTIONS,
         EDUCATION,
         WORK,
         PROJECT,
@@ -34,8 +22,11 @@ public class Main extends Application {
 
     private SelectorOption currentSelectorOption = SelectorOption.EDUCATION;
 
-    private ListView<ResumeField> educationListView;
-    private ObservableList<ResumeField> educationData;
+    private ObservableList<Section> sectionObservableList;
+    private ListView sectionListView;
+    private Section education;
+    private Section work;
+    private Section proj;
 
     private BorderPane rootlayout;
     private BorderPane viewerBorderPane;
@@ -45,8 +36,6 @@ public class Main extends Application {
     private HBox renderOptionsHBox;
 
     private Stage primaryStage;
-
-    private ObjectMapper mapper = new ObjectMapper();
 
     public static String getFileContent(
             InputStream fis) throws IOException {
@@ -123,15 +112,22 @@ public class Main extends Application {
 
     private VBox createSectionSelectorVBox() {
         sectionSelectorVBox = new VBox();
+        Button secButton = new Button("Sections");
         Button eduButton = new Button("Education");
         Button workButton = new Button("Work Experience");
         Button projButton = new Button("Personal Project");
         Button skillButton = new Button("Skills");
 
+        secButton.setMaxWidth(Double.MAX_VALUE);
         eduButton.setMaxWidth(Double.MAX_VALUE);
         workButton.setMaxWidth(Double.MAX_VALUE);
         projButton.setMaxWidth(Double.MAX_VALUE);
         skillButton.setMaxWidth(Double.MAX_VALUE);
+
+        secButton.setOnMouseClicked(e -> {
+            currentSelectorOption = SelectorOption.SECTIONS;
+            updateCurrentSelected();
+        });
 
         eduButton.setOnMouseClicked(e -> {
             currentSelectorOption = SelectorOption.EDUCATION;
@@ -139,117 +135,53 @@ public class Main extends Application {
         });
 
         workButton.setOnMouseClicked(e -> {
-            System.out.println("work");
+            currentSelectorOption = SelectorOption.WORK;
+            updateCurrentSelected();
         });
 
-        sectionSelectorVBox.getChildren().addAll(eduButton, workButton, projButton, skillButton);
+        projButton.setOnMouseClicked(e -> {
+            currentSelectorOption = SelectorOption.PROJECT;
+            updateCurrentSelected();
+        });
+
+
+
+        sectionSelectorVBox.getChildren().addAll(secButton, eduButton, workButton, projButton, skillButton);
 
         return sectionSelectorVBox;
     }
 
     private BorderPane createItemChooserBorderPane() {
-        itemChooserBorderPane = new BorderPane();
+        sectionObservableList = FXCollections.observableArrayList();
 
+        education = new Section("education", "Education");
+        education.initUseResumeField(primaryStage);
+        work = new Section("work", "Work Experience");
+        work.initUseResumeField(primaryStage);
+        proj = new Section("proj", "Projects");
+        proj.initUseResumeField(primaryStage);
+
+        sectionObservableList.addAll(education, work, proj);
+
+        // init list view for sections
+        sectionListView = new ListView<>(sectionObservableList);
+
+        itemChooserBorderPane = new BorderPane();
         return itemChooserBorderPane;
     }
 
     private void updateCurrentSelected() {
-        if (currentSelectorOption == SelectorOption.EDUCATION) {
-            createEducationSelector();
+        if(currentSelectorOption == SelectorOption.SECTIONS) {
+            //createSectionsSelector();
+        }
+        else if (currentSelectorOption == SelectorOption.EDUCATION) {
+            education.display(itemChooserBorderPane);
+        }
+        else if (currentSelectorOption == SelectorOption.WORK) {
+            work.display(itemChooserBorderPane);
+        }
+        else if (currentSelectorOption == SelectorOption.PROJECT) {
+            proj.display(itemChooserBorderPane);
         }
     }
-
-    private void createEducationSelector() {
-        itemChooserBorderPane.setTop(new Text("Education"));
-        if (educationListView == null) {
-            educationData = FXCollections.observableArrayList();
-
-            InputStream is = Main.class.getResourceAsStream("data/education.json");
-
-            try {
-                ArrayList<ResumeField> myObjects = mapper.readValue(is, new TypeReference<ArrayList<ResumeField>>() {
-                });
-                educationData.addAll(myObjects);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            educationListView = new ListView<ResumeField>(educationData);
-            educationListView.setCellFactory(CheckBoxListCell.forListView(new Callback<ResumeField, ObservableValue<Boolean>>() {
-                @Override
-                public ObservableValue<Boolean> call(ResumeField field) {
-                    BooleanProperty observable = new SimpleBooleanProperty();
-                    observable.addListener((obs, wasSelected, isNowSelected) ->
-                            System.out.println("Check box for " + field + " changed from " + wasSelected + " to " + isNowSelected)
-                    );
-                    return observable;
-                }
-            }));
-
-            educationListView.setOnMouseClicked(e -> {
-                if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2) {
-                    ResumeField current = educationListView.getSelectionModel().getSelectedItem();
-                    spawnEditor(current, educationListView);
-                }
-            });
-        }
-        itemChooserBorderPane.setCenter(educationListView);
-    }
-
-    private Stage spawnEditor(ResumeField field, ListView listView) {
-        GridPane grid = new GridPane();
-        Scene scene = new Scene(grid, 300, 275);
-        Stage editorStage = new Stage();
-
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-
-        Text scenetitle = new Text("Welcome");
-        grid.add(scenetitle, 0, 0, 2, 1);
-
-        Label title = new Label("Title:");
-        grid.add(title, 0, 1);
-
-        TextField titleTextField = new TextField(field.getTitle());
-        grid.add(titleTextField, 1, 1);
-
-        Label position = new Label("Position:");
-        grid.add(position, 0, 2);
-
-        TextField positionTextField = new TextField(field.getPosition());
-        grid.add(positionTextField, 1, 2);
-
-        Button saveButton = new Button("Save");
-        Button cancelButton = new Button("Cancel");
-
-        saveButton.setOnMouseClicked(e -> {
-            listView.getSelectionModel().clearSelection();
-            field.setTitle(titleTextField.getText());
-            field.setPosition(positionTextField.getText());
-            listView.refresh();
-            editorStage.close();
-        });
-
-        cancelButton.setOnMouseClicked(e -> {
-            editorStage.close();
-        });
-
-        HBox hbBtn = new HBox(10);
-        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
-        hbBtn.getChildren().add(saveButton);
-        hbBtn.getChildren().add(cancelButton);
-        grid.add(hbBtn, 1, 4);
-
-        editorStage.setTitle("Editing " + field);
-        editorStage.setScene(scene);
-
-        editorStage.initOwner(primaryStage);
-        editorStage.initModality(Modality.APPLICATION_MODAL);
-
-        editorStage.showAndWait();
-        return editorStage;
-    }
-
 }
