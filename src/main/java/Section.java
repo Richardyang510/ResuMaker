@@ -70,6 +70,10 @@ public class Section {
         return usesResumeField;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public boolean isEnabled() {
         return enabled;
     }

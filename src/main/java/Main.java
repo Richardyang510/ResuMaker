@@ -45,6 +45,8 @@ public class Main extends Application {
     private HBox renderOptionsHBox;
 
     private Stage primaryStage;
+    private HTMLGenerator htmlGenerator;
+    private String html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"> <html lang=\"en\"> <head> <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"></html>";
 
     public static String getFileContent(
             InputStream fis) throws IOException {
@@ -67,10 +69,11 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
+        htmlGenerator = new HTMLGenerator();
 
         Scene scene = new Scene(createRootLayout(), 300, 275);
 
-        stage.setTitle("Untitled Resume Builder");
+        stage.setTitle("Untitled Resume Builder"); // TODO name
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
@@ -93,6 +96,10 @@ public class Main extends Application {
         renderOptionsHBox = new HBox();
 
         Button saveButton = new Button("Save");
+        saveButton.setOnMouseClicked(e -> {
+            html = htmlGenerator.generateHTMLString(sectionObservableList);
+            viewerBorderPane.setRight(createHTMLScrollPane());
+        });
         renderOptionsHBox.getChildren().addAll(saveButton);
 
         viewerBorderPane.setBottom(renderOptionsHBox);
@@ -101,21 +108,18 @@ public class Main extends Application {
     }
 
     private StackPane createHTMLScrollPane() {
-        htmlStackPane = new StackPane();
-
+        if(htmlStackPane == null) {
+            htmlStackPane = new StackPane();
+        }
         Platform.runLater(() -> {
             WebView webView = new WebView();
-            try {
-                webView.getEngine().loadContent(getFileContent(getClass().getResource("index.html").openStream())); // TODO find created HTML file
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            webView.getEngine().loadContent(html);
             webView.setMaxHeight(Double.MAX_VALUE);
             webView.setMaxWidth(Double.MAX_VALUE);
+            htmlStackPane.getChildren().removeAll();
             htmlStackPane.getChildren().addAll(webView);
             htmlStackPane.setPrefWidth(1000D);
         });
-
         return htmlStackPane;
     }
 
@@ -210,10 +214,10 @@ public class Main extends Application {
             public ObservableValue<Boolean> call(Section item) {
                 System.out.println("asdf");
                 BooleanProperty observable = new SimpleBooleanProperty();
-                observable.addListener((obs, wasSelected, isNowSelected) ->
-                        // TODO section.setEnabled(true);
-                        System.out.println("Check box for " + item + " changed from " + wasSelected + " to " + isNowSelected)
-                );
+                observable.addListener((obs, wasSelected, isNowSelected) -> {
+                        item.setEnabled(isNowSelected);
+                        System.out.println("Check box for " + item + " changed from " + wasSelected + " to " + isNowSelected);
+                });
                 return observable;
             }
         }));
