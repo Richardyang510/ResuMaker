@@ -50,16 +50,18 @@ public class Section {
     private ListView<String> pointsListView;
 
     private Text title;
+    private Main main;
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    public Section(String type, String name) {
+    public Section(String type, String name, Main main) {
         this.type = type;
         this.name = name;
         this.title = new Text(name);
         this.name = name;
         title.setFont(Font.font(14));
         this.dataLocation = "data/" + type + ".json";
+        this.main = main;
     }
 
     public String getName() {
@@ -109,6 +111,7 @@ public class Section {
             BooleanProperty observable = new SimpleBooleanProperty();
             observable.addListener((obs, wasSelected, isNowSelected) -> {
                 field.setEnabled(isNowSelected);
+                main.updateLiveIfChecked();
                 System.out.println("Check box for " + field + " changed from " + wasSelected + " to " + isNowSelected);
             });
             return observable;
@@ -215,6 +218,7 @@ public class Section {
             field.setPoints(new ArrayList<>(pointsData));
             listView.refresh();
             editorStage.close();
+            main.updateLiveIfChecked();
         });
 
         cancelButton.setOnMouseClicked(e -> {
@@ -272,6 +276,7 @@ public class Section {
 
         blurbSave.setOnMouseClicked(e -> {
             notResumeFieldData = blurbTextArea.getText();
+            main.updateLiveIfChecked();
         });
 
         blurbCancel.setOnMouseClicked(e -> {

@@ -47,6 +47,7 @@ public class Main extends Application {
     private Stage primaryStage;
     private HTMLGenerator htmlGenerator;
     private String html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"> <html lang=\"en\"> <head> <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"></html>";
+    private CheckBox liveUpdateCheckBox;
 
     public static String getFileContent(
             InputStream fis) throws IOException {
@@ -100,7 +101,9 @@ public class Main extends Application {
             html = htmlGenerator.generateHTMLString(sectionObservableList);
             viewerBorderPane.setRight(createHTMLScrollPane());
         });
-        renderOptionsHBox.getChildren().addAll(saveButton);
+        liveUpdateCheckBox = new CheckBox("Live Update");
+
+        renderOptionsHBox.getChildren().addAll(saveButton, liveUpdateCheckBox);
 
         viewerBorderPane.setBottom(renderOptionsHBox);
 
@@ -172,12 +175,12 @@ public class Main extends Application {
     private BorderPane createItemChooserBorderPane() {
         sectionObservableList = FXCollections.observableArrayList();
 
-        blurb = new Section("blurb", "Career Objective");
-        education = new Section("education", "Education");
+        blurb = new Section("blurb", "Career Objective", this);
+        education = new Section("education", "Education", this);
         education.initUseResumeField(primaryStage);
-        work = new Section("work", "Work Experience");
+        work = new Section("work", "Work Experience", this);
         work.initUseResumeField(primaryStage);
-        proj = new Section("proj", "Projects");
+        proj = new Section("proj", "Projects", this);
         proj.initUseResumeField(primaryStage);
 
         sectionObservableList.addAll(blurb, education, work, proj);
@@ -216,6 +219,7 @@ public class Main extends Application {
                 BooleanProperty observable = new SimpleBooleanProperty();
                 observable.addListener((obs, wasSelected, isNowSelected) -> {
                         item.setEnabled(isNowSelected);
+                        updateLiveIfChecked();
                         System.out.println("Check box for " + item + " changed from " + wasSelected + " to " + isNowSelected);
                 });
                 return observable;
@@ -223,5 +227,13 @@ public class Main extends Application {
         }));
 
         return sectionListView;
+    }
+
+    public void updateLiveIfChecked() {
+        System.out.println(liveUpdateCheckBox.isSelected());
+        if(liveUpdateCheckBox.isSelected()) {
+            html = htmlGenerator.generateHTMLString(sectionObservableList);
+            viewerBorderPane.setRight(createHTMLScrollPane());
+        }
     }
 }
