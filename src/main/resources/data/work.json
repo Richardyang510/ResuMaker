@@ -1,20 +1,25 @@
 [
   {
-    "title": "University of Illinois at Urbana-Champaign",
+    "title": "UIUC",
     "position": "Software Developer",
     "location": "Champaign, Il",
     "startDate": "1985",
     "toDate": "1986",
     "points": [
-      "line 1",
-      "line 2"
+      "Ported UIUC Portal Web App to <b>React</b>",
+      "Used <b>Firebase</b> to handle authentication and database requirements",
+      "Received thanks for providing students with exam success"
     ]
   },
   {
-    "title": "Massachusetts Institute of Technology",
+    "title": "MIT",
     "position": "Janitor",
     "location": "Cambridge, MA",
     "startDate": "1987",
-    "toDate": "1988"
+    "toDate": "1988",
+    "points": [
+      "Scrubbed floors with industrial grade mops and cleaning fluids, such as dihydrogen monoxide",
+      "Picked up litter and sorted into recycling, compost, and trash"
+    ]
   }
 ]

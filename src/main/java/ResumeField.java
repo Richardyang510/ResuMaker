@@ -13,6 +13,7 @@ public class ResumeField {
 
     ResumeField() {
         points = new ArrayList<>();
+        enabled = true;
     }
 
     public String getTitle() {

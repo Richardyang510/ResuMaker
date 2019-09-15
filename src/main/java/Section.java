@@ -61,6 +61,7 @@ public class Section {
         title.setFont(Font.font(14));
         this.dataLocation = "data/" + type + ".json";
         this.main = main;
+        this.enabled = true;
     }
 
     public String getName() {
@@ -85,6 +86,10 @@ public class Section {
 
     public ObservableList<ResumeField> getData() {
         return data;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public void initTextData(String blockData) {
@@ -122,6 +127,15 @@ public class Section {
                 spawnEditor(current, listView);
             }
         });
+    }
+
+    public void initData() {
+        try {
+            notResumeFieldData = mapper.readValue(getClass().getResource(dataLocation), String.class);
+        } catch (IOException e) {
+            notResumeFieldData = "Failed to read file at " + dataLocation;
+        }
+        blurbTextArea = new TextArea(notResumeFieldData);
     }
 
     private Stage spawnEditor(ResumeField field, ListView listView) {
@@ -248,13 +262,6 @@ public class Section {
 
     private GridPane blurbEditor() {
         if(blurbEditorGrid != null) return blurbEditorGrid;
-
-        try {
-            notResumeFieldData = mapper.readValue(getClass().getResource(dataLocation), String.class);
-        } catch (IOException e) {
-            notResumeFieldData = "Failed to read file at " + dataLocation;
-        }
-        blurbTextArea = new TextArea(notResumeFieldData);
 
         blurbEditorGrid = new GridPane();
         blurbEditorGrid.setAlignment(Pos.CENTER);

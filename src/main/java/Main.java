@@ -28,7 +28,7 @@ public class Main extends Application {
         SKILL
     }
 
-    private SelectorOption currentSelectorOption = SelectorOption.EDUCATION;
+    private SelectorOption currentSelectorOption = SelectorOption.SECTIONS;
 
     private ObservableList<Section> sectionObservableList;
     private ListView<Section> sectionListView;
@@ -48,20 +48,6 @@ public class Main extends Application {
     private HTMLGenerator htmlGenerator;
     private String html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"> <html lang=\"en\"> <head> <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"></html>";
     private CheckBox liveUpdateCheckBox;
-
-    public static String getFileContent(
-            InputStream fis) throws IOException {
-        try (BufferedReader br =
-                     new BufferedReader(new InputStreamReader(fis))) {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-                sb.append('\n');
-            }
-            return sb.toString();
-        }
-    }
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -86,6 +72,7 @@ public class Main extends Application {
         rootlayout.setLeft(createSectionSelectorVBox());
         rootlayout.setCenter(createItemChooserBorderPane());
         updateCurrentSelected();
+        updateLiveIfChecked();
 
         return rootlayout;
     }
@@ -102,6 +89,7 @@ public class Main extends Application {
             viewerBorderPane.setRight(createHTMLScrollPane());
         });
         liveUpdateCheckBox = new CheckBox("Live Update");
+        liveUpdateCheckBox.setSelected(true);
 
         renderOptionsHBox.getChildren().addAll(saveButton, liveUpdateCheckBox);
 
@@ -176,6 +164,7 @@ public class Main extends Application {
         sectionObservableList = FXCollections.observableArrayList();
 
         blurb = new Section("blurb", "Career Objective", this);
+        blurb.initData();
         education = new Section("education", "Education", this);
         education.initUseResumeField(primaryStage);
         work = new Section("work", "Work Experience", this);

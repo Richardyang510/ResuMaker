@@ -3,11 +3,12 @@
     "title": "GeeseWatcher",
     "position": "App Developer",
     "location": "Waterloo, ON",
-    "startDate": "2014",
-    "toDate": "2016",
+    "startDate": "1999",
+    "toDate": "2003",
     "points": [
-      "line 1",
-      "line 2"
+      "Wrote an <b>Android</b> app in <b>Java</b> to help location geese on campus",
+      "Sped up goose finding process by reducing <b>SQL</b> accessess by 15%",
+      "Won award for most innovative new project by a goose"
     ]
   }
 ]

@@ -43,6 +43,10 @@ public class HTMLGenerator {
         } else {
             String template = "<div><p>%s</p></div>";
 
+            if(section.getType().equals("blurb")) {
+                template =  "<div id=\"objective\"><p>%s</p></div><div class=\"clear\"></div>";
+            }
+
             String notResumeFieldData = section.getNotResumeFieldData();
 
             String htmlString =  String.format(template, notResumeFieldData);
