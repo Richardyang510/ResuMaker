@@ -2,12 +2,12 @@ import java.util.ArrayList;
 
 public class ResumeField {
 
-    String title;
-    String position;
-    String location;
-    String startDate;
-    String toDate;
-    ArrayList<String> points;
+    private String title;
+    private String position;
+    private String location;
+    private String startDate;
+    private String toDate;
+    private ArrayList<String> points;
 
     ResumeField() {
         points = new ArrayList<>();
@@ -53,8 +53,12 @@ public class ResumeField {
         this.toDate = toDate;
     }
 
-    public void addPoint(String point) {
-        points.add(point);
+    public ArrayList<String> getPoints() {
+        return points;
+    }
+
+    public void setPoints(ArrayList<String> points) {
+        this.points = points;
     }
 
     @Override
