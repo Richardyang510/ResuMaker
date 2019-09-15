@@ -4,6 +4,10 @@
     "position": "App Developer",
     "location": "Waterloo, ON",
     "startDate": "2014",
-    "toDate": "2016"
+    "toDate": "2016",
+    "points": [
+      "line 1",
+      "line 2"
+    ]
   }
 ]

@@ -12,13 +12,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -41,6 +42,9 @@ public class Section {
     private ObservableList<ResumeField> data;
     private ListView<ResumeField> listView;
     private Stage primaryStage;
+
+    private ObservableList<String> pointsData;
+    private ListView<String> pointsListView;
 
     private Text title;
 
@@ -112,7 +116,7 @@ public class Section {
 
     private Stage spawnEditor(ResumeField field, ListView listView) {
         GridPane grid = new GridPane();
-        Scene scene = new Scene(grid, 300, 275);
+        Scene scene = new Scene(grid, 600, 450);
         Stage editorStage = new Stage();
 
         grid.setAlignment(Pos.CENTER);
@@ -123,18 +127,57 @@ public class Section {
         Text scenetitle = new Text("Welcome");
         grid.add(scenetitle, 0, 0, 2, 1);
 
+        // Title
         Label title = new Label("Title:");
         grid.add(title, 0, 1);
 
         TextField titleTextField = new TextField(field.getTitle());
         grid.add(titleTextField, 1, 1);
 
+        // Position
         Label position = new Label("Position:");
         grid.add(position, 0, 2);
 
         TextField positionTextField = new TextField(field.getPosition());
         grid.add(positionTextField, 1, 2);
 
+        // Location
+        Label location = new Label("Location:");
+        grid.add(location, 0, 3);
+
+        TextField locationTextField = new TextField(field.getLocation());
+        grid.add(locationTextField, 1, 3);
+
+        // Start
+        Label startDate = new Label("Start Date:");
+        grid.add(startDate, 0, 4);
+
+        TextField startDateTextField = new TextField(field.getStartDate());
+        grid.add(startDateTextField, 1, 4);
+
+        // End
+        Label toDate = new Label("End Date:");
+        grid.add(toDate, 0, 5);
+
+        TextField toDateTextField = new TextField(field.getToDate());
+        grid.add(toDateTextField, 1, 5);
+
+        // Points
+        pointsData = FXCollections.observableArrayList();
+        pointsData.addAll(field.getPoints());
+        pointsListView = new ListView<>(pointsData);
+        pointsListView.setEditable(true);
+        pointsListView.setCellFactory(TextFieldListCell.forListView());
+
+        pointsListView.setOnEditCommit(t -> {
+            pointsData.set(t.getIndex(), t.getNewValue());
+        });
+
+        Label points = new Label("Points:");
+        grid.add(points, 0, 6);
+        grid.add(pointsListView, 1, 6);
+
+        // Confirm/Cancel
         Button saveButton = new Button("Save");
         Button cancelButton = new Button("Cancel");
 
@@ -142,6 +185,10 @@ public class Section {
             listView.getSelectionModel().clearSelection();
             field.setTitle(titleTextField.getText());
             field.setPosition(positionTextField.getText());
+            field.setLocation(locationTextField.getText());
+            field.setStartDate(startDateTextField.getText());
+            field.setToDate(toDateTextField.getText());
+            field.setPoints(new ArrayList<>(pointsData));
             listView.refresh();
             editorStage.close();
         });
@@ -150,11 +197,17 @@ public class Section {
             editorStage.close();
         });
 
+        grid.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ESCAPE) {
+                editorStage.close();
+            }
+        });
+
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(saveButton);
         hbBtn.getChildren().add(cancelButton);
-        grid.add(hbBtn, 1, 4);
+        grid.add(hbBtn, 1, 7);
 
         editorStage.setTitle("Editing " + field);
         editorStage.setScene(scene);

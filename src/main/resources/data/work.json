@@ -4,7 +4,11 @@
     "position": "Software Developer",
     "location": "Champaign, Il",
     "startDate": "1985",
-    "toDate": "1986"
+    "toDate": "1986",
+    "points": [
+      "line 1",
+      "line 2"
+    ]
   },
   {
     "title": "Massachusetts Institute of Technology",
