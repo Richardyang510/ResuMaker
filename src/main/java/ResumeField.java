@@ -9,6 +9,8 @@ public class ResumeField {
     private String toDate;
     private ArrayList<String> points;
 
+    private boolean enabled = false;
+
     ResumeField() {
         points = new ArrayList<>();
     }
@@ -59,6 +61,14 @@ public class ResumeField {
 
     public void setPoints(ArrayList<String> points) {
         this.points = points;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override

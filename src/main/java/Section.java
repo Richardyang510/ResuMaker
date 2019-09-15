@@ -33,13 +33,13 @@ public class Section {
     private String name; // e.g. Education, Work Experience
 
     private boolean usesResumeField = false; // would be only a string if false
+    private boolean enabled = false;
 
     private String notResumeFieldData;
 
     private String dataLocation;
     private ObservableList<ResumeField> data;
     private ListView<ResumeField> listView;
-    private HashMap<ResumeField, Boolean> selected;
     private Stage primaryStage;
 
     private Text title;
@@ -49,8 +49,29 @@ public class Section {
     public Section(String type, String name) {
         this.type = type;
         this.title = new Text(name);
+        this.name = name;
         title.setFont(Font.font(14));
         this.dataLocation = "data/" + type + ".json";
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isUsesResumeField() {
+        return usesResumeField;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public String getNotResumeFieldData() {
+        return notResumeFieldData;
+    }
+
+    public ObservableList<ResumeField> getData() {
+        return data;
     }
 
     public void initTextData(String blockData) {
@@ -61,7 +82,6 @@ public class Section {
         this.usesResumeField = true;
         this.primaryStage = primaryStage;
         this.data = FXCollections.observableArrayList();
-        this.selected = new HashMap<>();
 
         InputStream is = getClass().getResourceAsStream(dataLocation);
         try {
@@ -71,15 +91,12 @@ public class Section {
             e.printStackTrace();
         }
 
-        for(ResumeField f : data) {
-            selected.put(f, false);
-        }
 
         listView = new ListView<>(data);
         listView.setCellFactory(CheckBoxListCell.forListView(field -> {
             BooleanProperty observable = new SimpleBooleanProperty();
             observable.addListener((obs, wasSelected, isNowSelected) -> {
-                selected.put(field, isNowSelected);
+                field.setEnabled(isNowSelected);
                 System.out.println("Check box for " + field + " changed from " + wasSelected + " to " + isNowSelected);
             });
             return observable;
