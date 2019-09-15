@@ -12,6 +12,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -84,15 +85,25 @@ public class Main extends Application {
 
         renderOptionsHBox = new HBox();
 
-        Button saveButton = new Button("Save");
-        saveButton.setOnMouseClicked(e -> {
+        Button exportButton = new Button("Export");
+        exportButton.setOnMouseClicked(e -> {
+            Stage exportHTML = new Stage();
+            TextArea formattedHTMLTextArea = new TextArea(htmlGenerator.prettyPrintHTML(html));
+            Scene scene = new Scene(formattedHTMLTextArea, 600, 450);
+            exportHTML.setScene(scene);
+            exportHTML.initOwner(primaryStage);
+            exportHTML.initModality(Modality.APPLICATION_MODAL);
+            exportHTML.showAndWait();
+        });
+        Button renderButton = new Button("Render");
+        renderButton.setOnMouseClicked(e -> {
             html = htmlGenerator.generateHTMLString(sectionObservableList);
             viewerBorderPane.setRight(createHTMLScrollPane());
         });
         liveUpdateCheckBox = new CheckBox("Live Update");
         liveUpdateCheckBox.setSelected(true);
 
-        renderOptionsHBox.getChildren().addAll(saveButton, liveUpdateCheckBox);
+        renderOptionsHBox.getChildren().addAll(exportButton, renderButton, liveUpdateCheckBox);
 
         viewerBorderPane.setBottom(renderOptionsHBox);
 

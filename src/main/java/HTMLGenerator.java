@@ -1,5 +1,10 @@
 import javafx.collections.ObservableList;
+import org.w3c.dom.Document;
+import org.w3c.tidy.Tidy;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class HTMLGenerator {
@@ -109,5 +114,22 @@ public class HTMLGenerator {
         String htmlString = String.format(template, title, pointsString);
         System.out.println(htmlString);
         return htmlString;
+    }
+
+    public String prettyPrintHTML(String rawHTML) {
+        Tidy tidy = new Tidy();
+        tidy.setXHTML(true);
+        tidy.setIndentContent(true);
+        tidy.setPrintBodyOnly(true);
+        tidy.setTidyMark(false);
+
+        // HTML to DOM
+        Document htmlDOM = tidy.parseDOM(new ByteArrayInputStream(rawHTML.getBytes()), null);
+
+        // Pretty Print
+        OutputStream out = new ByteArrayOutputStream();
+        tidy.pprint(htmlDOM, out);
+
+        return out.toString();
     }
 }
