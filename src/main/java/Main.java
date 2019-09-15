@@ -1,12 +1,19 @@
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.*;
 
@@ -24,7 +31,7 @@ public class Main extends Application {
     private SelectorOption currentSelectorOption = SelectorOption.EDUCATION;
 
     private ObservableList<Section> sectionObservableList;
-    private ListView sectionListView;
+    private ListView<Section> sectionListView;
     private Section blurb;
     private Section education;
     private Section work;
@@ -171,28 +178,46 @@ public class Main extends Application {
 
         sectionObservableList.addAll(blurb, education, work, proj);
 
-        // init list view for sections
-        sectionListView = new ListView<>(sectionObservableList);
-
         itemChooserBorderPane = new BorderPane();
         return itemChooserBorderPane;
     }
 
+    private Text sectionsText = new Text("Sections");
+
+
     private void updateCurrentSelected() {
-        if(currentSelectorOption == SelectorOption.SECTIONS) {
-            //createSectionsSelector();
-        }
-        else if (currentSelectorOption == SelectorOption.BLURB) {
+        if (currentSelectorOption == SelectorOption.SECTIONS) {
+            sectionsText.setFont(Font.font(14));
+            itemChooserBorderPane.setCenter(createSectionsSelector());
+            itemChooserBorderPane.setTop(sectionsText);
+        } else if (currentSelectorOption == SelectorOption.BLURB) {
             blurb.display(itemChooserBorderPane);
-        }
-        else if (currentSelectorOption == SelectorOption.EDUCATION) {
+        } else if (currentSelectorOption == SelectorOption.EDUCATION) {
             education.display(itemChooserBorderPane);
-        }
-        else if (currentSelectorOption == SelectorOption.WORK) {
+        } else if (currentSelectorOption == SelectorOption.WORK) {
             work.display(itemChooserBorderPane);
-        }
-        else if (currentSelectorOption == SelectorOption.PROJECT) {
+        } else if (currentSelectorOption == SelectorOption.PROJECT) {
             proj.display(itemChooserBorderPane);
         }
+    }
+
+    private ListView createSectionsSelector() {
+        if (sectionListView != null) return sectionListView;
+
+        sectionListView = new ListView<>(sectionObservableList);
+        sectionListView.setCellFactory(CheckBoxListCell.forListView(new Callback<Section, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(Section item) {
+                System.out.println("asdf");
+                BooleanProperty observable = new SimpleBooleanProperty();
+                observable.addListener((obs, wasSelected, isNowSelected) ->
+                        // TODO section.setEnabled(true);
+                        System.out.println("Check box for " + item + " changed from " + wasSelected + " to " + isNowSelected)
+                );
+                return observable;
+            }
+        }));
+
+        return sectionListView;
     }
 }

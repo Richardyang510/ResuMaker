@@ -55,6 +55,7 @@ public class Section {
 
     public Section(String type, String name) {
         this.type = type;
+        this.name = name;
         this.title = new Text(name);
         this.name = name;
         title.setFont(Font.font(14));
@@ -287,6 +288,6 @@ public class Section {
 
     @Override
     public String toString() {
-        return name;
+        return this.name;
     }
 }
