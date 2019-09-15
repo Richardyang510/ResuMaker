@@ -33,6 +33,7 @@ public class Main extends Application {
     private ObservableList<Section> sectionObservableList;
     private ListView<Section> sectionListView;
     private Section blurb;
+    private Section skill;
     private Section education;
     private Section work;
     private Section proj;
@@ -118,13 +119,14 @@ public class Main extends Application {
         sectionSelectorVBox = new VBox();
         Button secButton = new Button("Sections");
         Button blurbButton = new Button("Career Objective");
+        Button skillButton = new Button("Skills");
         Button eduButton = new Button("Education");
         Button workButton = new Button("Work Experience");
         Button projButton = new Button("Personal Project");
-        Button skillButton = new Button("Skills");
 
         secButton.setMaxWidth(Double.MAX_VALUE);
         blurbButton.setMaxWidth(Double.MAX_VALUE);
+        skillButton.setMaxWidth(Double.MAX_VALUE);
         eduButton.setMaxWidth(Double.MAX_VALUE);
         workButton.setMaxWidth(Double.MAX_VALUE);
         projButton.setMaxWidth(Double.MAX_VALUE);
@@ -137,6 +139,11 @@ public class Main extends Application {
 
         blurbButton.setOnMouseClicked(e -> {
             currentSelectorOption = SelectorOption.BLURB;
+            updateCurrentSelected();
+        });
+
+        skillButton.setOnMouseClicked(e -> {
+            currentSelectorOption = SelectorOption.SKILL;
             updateCurrentSelected();
         });
 
@@ -155,7 +162,7 @@ public class Main extends Application {
             updateCurrentSelected();
         });
 
-        sectionSelectorVBox.getChildren().addAll(secButton, blurbButton, eduButton, workButton, projButton, skillButton);
+        sectionSelectorVBox.getChildren().addAll(secButton, blurbButton, skillButton, eduButton, workButton, projButton);
 
         return sectionSelectorVBox;
     }
@@ -167,12 +174,14 @@ public class Main extends Application {
         blurb.initData();
         education = new Section("education", "Education", this);
         education.initUseResumeField(primaryStage);
+        skill = new Section("skill", "Summary of Qualifications", this);
+        skill.initUseResumeField(primaryStage);
         work = new Section("work", "Work Experience", this);
         work.initUseResumeField(primaryStage);
         proj = new Section("proj", "Projects", this);
         proj.initUseResumeField(primaryStage);
 
-        sectionObservableList.addAll(blurb, education, work, proj);
+        sectionObservableList.addAll(blurb, education, skill, work, proj);
 
         itemChooserBorderPane = new BorderPane();
         return itemChooserBorderPane;
@@ -190,6 +199,8 @@ public class Main extends Application {
             blurb.display(itemChooserBorderPane);
         } else if (currentSelectorOption == SelectorOption.EDUCATION) {
             education.display(itemChooserBorderPane);
+        } else if (currentSelectorOption == SelectorOption.SKILL) {
+            skill.display(itemChooserBorderPane);
         } else if (currentSelectorOption == SelectorOption.WORK) {
             work.display(itemChooserBorderPane);
         } else if (currentSelectorOption == SelectorOption.PROJECT) {
@@ -204,7 +215,6 @@ public class Main extends Application {
         sectionListView.setCellFactory(CheckBoxListCell.forListView(new Callback<Section, ObservableValue<Boolean>>() {
             @Override
             public ObservableValue<Boolean> call(Section item) {
-                System.out.println("asdf");
                 BooleanProperty observable = new SimpleBooleanProperty(item.isEnabled());
                 observable.addListener((obs, wasSelected, isNowSelected) -> {
                         item.setEnabled(isNowSelected);

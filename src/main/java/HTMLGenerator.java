@@ -33,13 +33,17 @@ public class HTMLGenerator {
 
             for (ResumeField resumeField : resumeFields) {
                 if (resumeField.isEnabled()) {
-                    fields.append(resumeFieldToHTMLString(resumeField));
+                    if (section.getType().equals("skill")) {
+                        fields.append(fewResumeFieldToHTMLString(resumeField));
+                    } else {
+                        fields.append(resumeFieldToHTMLString(resumeField));
+                    }
                 }
             }
 
             String htmlString =  String.format(template, name, fields.toString());
             System.out.println(htmlString);
-            return String.format(template, name, fields.toString());
+            return htmlString;
         } else {
             String template = "<div><p>%s</p></div>";
 
@@ -73,6 +77,24 @@ public class HTMLGenerator {
         }
 
         String htmlString = String.format(template, title, position, location, startDate, toDate, pointsString);
+        System.out.println(htmlString);
+        return htmlString;
+    }
+
+    private String fewResumeFieldToHTMLString(ResumeField resumeField) {
+        String template = "<h2>%s</h2><ul>%s</ul>";
+
+        String title = resumeField.getTitle();
+        ArrayList<String> points = resumeField.getPoints();
+        StringBuilder pointsString = new StringBuilder();
+
+        for (String point : points) {
+            if (!point.equals("")) {
+                pointsString.append("<p>").append(point).append("</p>");
+            }
+        }
+
+        String htmlString = String.format(template, title, pointsString);
         System.out.println(htmlString);
         return htmlString;
     }
