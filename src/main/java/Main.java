@@ -62,7 +62,7 @@ public class Main extends Application {
 
         Scene scene = new Scene(createRootLayout(), 300, 275);
 
-        stage.setTitle("Untitled Resume Builder"); // TODO name
+        stage.setTitle("RésuMaker");
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
